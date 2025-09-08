@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finanz-Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-form {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-form h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e1e1;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            transition: border-color 0.3s;
+        }
+
+        .login-form input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .login-form button {
+            width: 100%;
+            padding: 15px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .login-form button:hover {
+            background: #5a6fd8;
+        }
+
+        .dashboard {
+            display: none;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .year-summary {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .year-summary h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .summary-item {
+            text-align: center;
+            padding: 20px;
+            border-radius: 12px;
+            background: #f8f9fa;
+        }
+
+        .summary-item h3 {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .summary-item .value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .positive { color: #27ae60; }
+        .negative { color: #e74c3c; }
+
+        .quarters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .quarter-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .quarter-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .quarter-card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            padding: 30px;
+            min-height: 200px;
+        }
+
+        .card-back {
+            display: none;
+        }
+
+        .quarter-card.detailed .card-front {
+            display: none;
+        }
+
+        .quarter-card.detailed .card-back {
+            display: block;
+        }
+
+        .quarter-header {
+            margin-bottom: 20px;
+        }
+
+        .quarter-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .quarter-period {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .quarter-result {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .goals {
+            margin-top: 20px;
+        }
+
+        .goal {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .goal-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .goal-status {
+            font-weight: bold;
+        }
+
+        .achieved { color: #27ae60; }
+        .not-achieved { color: #e74c3c; }
+
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .details-table th,
+        .details-table td {
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .details-table th {
+            background: #f8f9fa;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .details-table td {
+            font-size: 0.8rem;
+        }
+
+        .error {
+            color: #e74c3c;
+            text-align: center;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            margin: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            color: white;
+            font-size: 1.2rem;
+            padding: 40px;
+        }
+
+        .back-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        .back-btn:hover {
+            background: #5a6fd8;
+        }
+
+        @media (max-width: 768px) {
+            .quarters-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container" id="loginContainer">
+        <div class="login-form">
+            <h1>Finanz-Dashboard</h1>
+            <input type="password" id="passwordInput" placeholder="Passwort eingeben" />
+            <button onclick="login()">Anmelden</button>
+        </div>
+    </div>
+
+    <div class="dashboard" id="dashboard">
+        <div class="header">
+            <h1>Finanz-Dashboard 2025</h1>
+            <p>Quartalsergebnisse und Jahresübersicht</p>
+        </div>
+
+        <div class="year-summary">
+            <h2>Jahresübersicht 2025</h2>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <h3>Kumuliertes Ergebnis</h3>
+                    <div class="value" id="yearResult">Lade...</div>
+                </div>
+                <div class="summary-item">
+                    <h3>Gesamteinnahmen</h3>
+                    <div class="value positive" id="yearIncome">Lade...</div>
+                </div>
+                <div class="summary-item">
+                    <h3>Gesamtausgaben</h3>
+                    <div class="value negative" id="yearExpenses">Lade...</div>
+                </div>
+                <div class="summary-item">
+                    <h3>Kontostand</h3>
+                    <div class="value" id="accountBalance">Lade...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="quarters-grid" id="quartersGrid">
+            <!-- Quartals-Karten werden hier dynamisch eingefügt -->
+        </div>
+    </div>
+
+    <script>
+        // Konfiguration
+        const CONFIG = {
+            password: "Konkordia2025", // Ändern Sie dieses Passwort!
+            githubRepo: "jcdappen/finanz-dashboard", // Ändern Sie dies zu Ihrem GitHub Repository
+            githubBranch: "main", // oder "master"
+            csvFiles: [
+                "EUR_1Q_25.csv",
+                "EUR_2Q_25.csv",
+                "EUR_3Q_25.csv",
+                "EUR_4Q_25.csv"
+            ],
+            goals: {
+                quarterly: 25000, // Kostendeckung pro Quartal
+                monthlyVision: 27000 // Vision für Kinder- und Jugendbereich pro Monat
+            }
+        };
+
+        let quarterData = [];
+        let isLoggedIn = false;
+
+        function login() {
+            const password = document.getElementById('passwordInput').value;
+            if (password === CONFIG.password) {
+                isLoggedIn = true;
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                loadDashboardData();
+            } else {
+                alert('Falsches Passwort!');
+            }
+        }
+
+        // Enter-Taste für Login
+        document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                login();
+            }
+        });
+
+        async function loadDashboardData() {
+            try {
+                const data = await loadCSVData();
+                quarterData = data;
+                updateYearSummary();
+                renderQuarterCards();
+            } catch (error) {
+                console.error('Fehler beim Laden der Daten:', error);
+                document.getElementById('dashboard').innerHTML = 
+                    '<div class="error">Fehler beim Laden der CSV-Dateien. Bitte überprüfen Sie die GitHub-Konfiguration.</div>';
+            }
+        }
+
+        async function loadCSVData() {
+            const quarters = [];
+            
+            for (let i = 0; i < CONFIG.csvFiles.length; i++) {
+                try {
+                    const response = await fetch(`https://raw.githubusercontent.com/${CONFIG.githubRepo}/${CONFIG.githubBranch}/${CONFIG.csvFiles[i]}`);
+                    if (response.ok) {
+                        const csvText = await response.text();
+                        const quarterData = parseCSV(csvText, i + 1);
+                        quarters.push(quarterData);
+                    } else {
+                        // Datei existiert noch nicht (z.B. Q3, Q4)
+                        quarters.push(null);
+                    }
+                } catch (error) {
+                    quarters.push(null);
+                }
+            }
+            
+            return quarters.filter(q => q !== null); // Nur verfügbare Quartale
+        }
+
+        function parseCSV(csvText, quarter) {
+            const lines = csvText.split('\n');
+            let ertraege = [];
+            let aufwendungen = [];
+            let isErtraege = false;
+            let isAufwendungen = false;
+            let gesamtEinnahmen = 0;
+            let gesamtAusgaben = 0;
+            let ueberschuss = 0;
+            let kontostand = 0;
+            let period = '';
+
+            // Periode aus der ersten Zeile extrahieren
+            if (lines[0]) {
+                const periodMatch = lines[0].match(/(\d{2}\.\d{2}\.\d{4})\s+bis\s+(\d{2}\.\d{2}\.\d{4})/);
+                if (periodMatch) {
+                    period = `${periodMatch[1]} - ${periodMatch[2]}`;
+                }
+            }
+
+            for (let line of lines) {
+                const cols = line.split(';');
+                
+                if (line.includes('Erträge')) {
+                    isErtraege = true;
+                    isAufwendungen = false;
+                    continue;
+                }
+                
+                if (line.includes('Aufwendungen')) {
+                    isErtraege = false;
+                    isAufwendungen = true;
+                    continue;
+                }
+                
+                if (line.includes('Gesamtsumme') && cols[3]) {
+                    const betrag = parseGermanNumber(cols[3]);
+                    if (isErtraege) {
+                        gesamtEinnahmen = betrag;
+                    } else if (isAufwendungen) {
+                        gesamtAusgaben = betrag;
+                    }
+                    continue;
+                }
+                
+                if (line.includes('Überschuss/Unterdeckung') && cols[3]) {
+                    ueberschuss = parseGermanNumber(cols[3]);
+                    continue;
+                }
+                
+                if (line.includes('Kontostand') && cols[3]) {
+                    kontostand = parseGermanNumber(cols[3]);
+                    continue;
+                }
+                
+                // Einzelne Posten
+                if (cols.length >= 4 && cols[2] && cols[3] && !line.includes('Gesamtsumme')) {
+                    const name = cols[2].trim();
+                    const betragAktuell = parseGermanNumber(cols[3]);
+                    const betragVorjahr = cols[4] ? parseGermanNumber(cols[4]) : 0;
+                    
+                    if (name && betragAktuell !== 0) {
+                        const item = {
+                            name: name,
+                            aktuell: betragAktuell,
+                            vorjahr: betragVorjahr
+                        };
+                        
+                        if (isErtraege) {
+                            ertraege.push(item);
+                        } else if (isAufwendungen) {
+                            aufwendungen.push(item);
+                        }
+                    }
+                }
+            }
+
+            return {
+                quarter: quarter,
+                period: period,
+                ertraege: ertraege,
+                aufwendungen: aufwendungen,
+                gesamtEinnahmen: gesamtEinnahmen,
+                gesamtAusgaben: gesamtAusgaben,
+                ueberschuss: ueberschuss,
+                kontostand: kontostand
+            };
+        }
+
+        function parseGermanNumber(str) {
+            if (!str || str.trim() === '') return 0;
+            
+            // Entferne alle Nicht-Ziffern außer Komma, Punkt und Minus
+            let cleaned = str.replace(/[^\d,.-]/g, '');
+            
+            // Deutsche Zahlen: Punkt als Tausendertrennzeichen, Komma als Dezimaltrennzeichen
+            if (cleaned.includes(',')) {
+                // Ersetze Punkt durch nichts (Tausendertrennzeichen entfernen)
+                cleaned = cleaned.replace(/\./g, '');
+                // Ersetze Komma durch Punkt (Dezimaltrennzeichen)
+                cleaned = cleaned.replace(',', '.');
+            }
+            
+            return parseFloat(cleaned) || 0;
+        }
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('de-DE', {
+                style: 'currency',
+                currency: 'EUR'
+            }).format(amount);
+        }
+
+        function updateYearSummary() {
+            let totalIncome = 0;
+            let totalExpenses = 0;
+            let totalResult = 0;
+            let currentBalance = 0;
+
+            quarterData.forEach(quarter => {
+                totalIncome += quarter.gesamtEinnahmen;
+                totalExpenses += quarter.gesamtAusgaben;
+                totalResult += quarter.ueberschuss;
+            });
+
+            if (quarterData.length > 0) {
+                currentBalance = quarterData[quarterData.length - 1].kontostand;
+            }
+
+            document.getElementById('yearResult').textContent = formatCurrency(totalResult);
+            document.getElementById('yearResult').className = 'value ' + (totalResult >= 0 ? 'positive' : 'negative');
+            document.getElementById('yearIncome').textContent = formatCurrency(totalIncome);
+            document.getElementById('yearExpenses').textContent = formatCurrency(totalExpenses);
+            document.getElementById('accountBalance').textContent = formatCurrency(currentBalance);
+            document.getElementById('accountBalance').className = 'value ' + (currentBalance >= 0 ? 'positive' : 'negative');
+        }
+
+        function renderQuarterCards() {
+            const grid = document.getElementById('quartersGrid');
+            grid.innerHTML = '';
+
+            const quarterNames = ['1. Quartal', '2. Quartal', '3. Quartal', '4. Quartal'];
+
+            for (let i = 0; i < 4; i++) {
+                const quarter = quarterData[i];
+                const card = document.createElement('div');
+                card.className = 'quarter-card';
+                card.onclick = () => toggleCard(i);
+
+                if (quarter) {
+                    const quarterlyGoalAchieved = quarter.ueberschuss >= CONFIG.goals.quarterly;
+                    const monthlyVisionGoal = CONFIG.goals.monthlyVision * 3; // 3 Monate pro Quartal
+                    const visionGoalAchieved = quarter.ueberschuss >= monthlyVisionGoal;
+
+                    card.innerHTML = `
+                        <div class="card-front">
+                            <div class="quarter-header">
+                                <div class="quarter-title">${quarterNames[i]}</div>
+                                <div class="quarter-period">${quarter.period}</div>
+                            </div>
+                            <div class="quarter-result ${quarter.ueberschuss >= 0 ? 'positive' : 'negative'}">
+                                ${formatCurrency(quarter.ueberschuss)}
+                            </div>
+                            <div class="goals">
+                                <div class="goal">
+                                    <span class="goal-label">Kostendeckung</span>
+                                    <span class="goal-status ${quarterlyGoalAchieved ? 'achieved' : 'not-achieved'}">
+                                        ${quarterlyGoalAchieved ? '✓ Erreicht' : '✗ Nicht erreicht'}
+                                    </span>
+                                </div>
+                                <div class="goal">
+                                    <span class="goal-label">Vision (81.000€)</span>
+                                    <span class="goal-status ${visionGoalAchieved ? 'achieved' : 'not-achieved'}">
+                                        ${visionGoalAchieved ? '✓ Erreicht' : '✗ Nicht erreicht'}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-back">
+                            <button class="back-btn" onclick="event.stopPropagation(); toggleCard(${i})">← Zurück</button>
+                            <div class="quarter-header">
+                                <div class="quarter-title">${quarterNames[i]} - Details</div>
+                                <div class="quarter-period">${quarter.period}</div>
+                            </div>
+                            
+                            <h4>Erträge</h4>
+                            <table class="details-table">
+                                <thead>
+                                    <tr>
+                                        <th>Konto</th>
+                                        <th>Aktuell</th>
+                                        <th>Vorjahr</th>
+                                        <th>Diff.</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${quarter.ertraege.map(item => `
+                                        <tr>
+                                            <td>${item.name}</td>
+                                            <td style="color: #27ae60">${formatCurrency(item.aktuell)}</td>
+                                            <td>${formatCurrency(item.vorjahr)}</td>
+                                            <td class="${item.aktuell - item.vorjahr >= 0 ? 'positive' : 'negative'}">
+                                                ${formatCurrency(item.aktuell - item.vorjahr)}
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                    <tr style="border-top: 2px solid #333; font-weight: bold;">
+                                        <td>Gesamt</td>
+                                        <td style="color: #27ae60">${formatCurrency(quarter.gesamtEinnahmen)}</td>
+                                        <td>-</td>
+                                        <td>-</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h4 style="margin-top: 20px;">Aufwendungen</h4>
+                            <table class="details-table">
+                                <thead>
+                                    <tr>
+                                        <th>Konto</th>
+                                        <th>Aktuell</th>
+                                        <th>Vorjahr</th>
+                                        <th>Diff.</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${quarter.aufwendungen.map(item => `
+                                        <tr>
+                                            <td>${item.name}</td>
+                                            <td style="color: #e74c3c">${formatCurrency(item.aktuell)}</td>
+                                            <td>${formatCurrency(item.vorjahr)}</td>
+                                            <td class="${item.aktuell - item.vorjahr <= 0 ? 'positive' : 'negative'}">
+                                                ${formatCurrency(item.aktuell - item.vorjahr)}
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                    <tr style="border-top: 2px solid #333; font-weight: bold;">
+                                        <td>Gesamt</td>
+                                        <td style="color: #e74c3c">${formatCurrency(quarter.gesamtAusgaben)}</td>
+                                        <td>-</td>
+                                        <td>-</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                } else {
+                    card.innerHTML = `
+                        <div class="card-front">
+                            <div class="quarter-header">
+                                <div class="quarter-title">${quarterNames[i]}</div>
+                                <div class="quarter-period">Noch nicht verfügbar</div>
+                            </div>
+                            <div class="quarter-result" style="color: #999;">
+                                Daten ausstehend
+                            </div>
+                        </div>
+                    `;
+                    card.style.opacity = '0.5';
+                    card.style.cursor = 'default';
+                    card.onclick = null;
+                }
+
+                grid.appendChild(card);
+            }
+        }
+
+        function toggleCard(index) {
+            const cards = document.querySelectorAll('.quarter-card');
+            const card = cards[index];
+            if (quarterData[index]) {
+                card.classList.toggle('detailed');
+            }
+        }
+
+        // Auto-load wenn bereits eingeloggt (für Development)
+        if (window.location.hash === '#dev') {
+            isLoggedIn = true;
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            loadDashboardData();
+        }
+    </script>
+</body>
+</html>
