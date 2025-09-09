@@ -615,7 +615,6 @@
             let totalIncome = 0;
             let totalExpenses = 0;
             let totalResult = 0;
-            let currentBalance = 0;
 
             quarterData.forEach(quarter => {
                 totalIncome += quarter.gesamtEinnahmen;
@@ -623,16 +622,10 @@
                 totalResult += quarter.ueberschuss;
             });
 
-            if (quarterData.length > 0) {
-                currentBalance = quarterData[quarterData.length - 1].kontostand || 0;
-            }
-
             document.getElementById('yearResult').textContent = formatCurrency(totalResult);
             document.getElementById('yearResult').className = 'value ' + (totalResult >= 0 ? 'positive' : 'negative');
             document.getElementById('yearIncome').textContent = formatCurrency(totalIncome);
             document.getElementById('yearExpenses').textContent = formatCurrency(totalExpenses);
-            document.getElementById('accountBalance').textContent = formatCurrency(currentBalance);
-            document.getElementById('accountBalance').className = 'value ' + (currentBalance >= 0 ? 'positive' : 'negative');
         }
 
         function renderQuarterCards() {
