@@ -276,12 +276,18 @@
         }
 
         @media (max-width: 768px) {
-            .quarters-grid {
+            .summary-grid {
                 grid-template-columns: 1fr;
             }
             
-            .summary-grid {
-                grid-template-columns: 1fr;
+            .details-table th,
+            .details-table td {
+                padding: 8px 4px;
+                font-size: 12px;
+            }
+            
+            .details-table th {
+                font-size: 11px;
             }
         }
     </style>
@@ -335,10 +341,10 @@
             githubRepo: "jcdappen/finanz-dashboard", // Ihr GitHub Repository
             githubBranch: "main", // oder "master"
             csvFiles: [
-               "EUR-1Q-25.csv",
-    "EUR-2Q-25.csv",
-    "EUR-3Q-25.csv",
-    "EUR-4Q-25.csv"
+                "EUR_1Q_25.csv",
+                "EUR_2Q_25.csv", 
+                "EUR_3Q_25.csv",
+                "EUR_4Q_25.csv"
             ],
             goals: {
                 quarterly: 25000, // Kostendeckung pro Quartal
