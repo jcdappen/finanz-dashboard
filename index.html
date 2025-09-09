@@ -702,7 +702,6 @@
                                             <th>Konto</th>
                                             <th>Aktuelles Jahr</th>
                                             <th>Vorjahr</th>
-                                            <th>Differenz</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -711,15 +710,31 @@
                                                 <td>${item.name}</td>
                                                 <td style="color: #e74c3c; font-weight: 500;">${formatCurrency(item.aktuell)}</td>
                                                 <td>${formatCurrency(item.vorjahr)}</td>
-                                                <td class="${item.aktuell - item.vorjahr <= 0 ? 'positive' : 'negative'}">
-                                                    ${formatCurrency(item.aktuell - item.vorjahr)}
-                                                </td>
                                             </tr>
                                         `).join('')}
                                         <tr class="total-row">
                                             <td>Gesamt Aufwendungen</td>
                                             <td style="color: #e74c3c;">${formatCurrency(quarter.gesamtAusgaben)}</td>
                                             <td>-</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="details-section">
+                                <h4>Kontostände</h4>
+                                <table class="details-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Beschreibung</th>
+                                            <th>Aktuelles Jahr</th>
+                                            <th>Vorjahr</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="total-row">
+                                            <td>Kontostand am Quartalsende</td>
+                                            <td style="color: ${quarter.kontostand >= 0 ? '#27ae60' : '#e74c3c'}; font-weight: bold;">${formatCurrency(quarter.kontostand)}</td>
                                             <td>-</td>
                                         </tr>
                                     </tbody>
