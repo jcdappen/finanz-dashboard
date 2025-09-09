@@ -116,6 +116,17 @@
             background: #f8f9fa;
         }
 
+        .summary-item.highlight {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .summary-item.highlight h3 {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
         .summary-item h3 {
             font-size: 0.9rem;
             color: #666;
@@ -378,7 +389,7 @@
         <div class="year-summary">
             <h2>Jahresübersicht 2025</h2>
             <div class="summary-grid">
-                <div class="summary-item">
+                <div class="summary-item highlight">
                     <h3>Kumuliertes Ergebnis</h3>
                     <div class="value" id="yearResult">Lade...</div>
                 </div>
@@ -389,10 +400,6 @@
                 <div class="summary-item">
                     <h3>Gesamtausgaben</h3>
                     <div class="value negative" id="yearExpenses">Lade...</div>
-                </div>
-                <div class="summary-item">
-                    <h3>Kontostand</h3>
-                    <div class="value" id="accountBalance">Lade...</div>
                 </div>
             </div>
         </div>
