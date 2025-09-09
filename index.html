@@ -406,8 +406,8 @@
         // Konfiguration
         const CONFIG = {
             password: "Konkordia2025",
-            githubRepo: "jcdappen/finanz-dashboard", // Ihr GitHub Repository
-            githubBranch: "main", // oder "master"
+            githubRepo: "jcdappen/finanz-dashboard", 
+            githubBranch: "main",
             csvFiles: [
                 "EUR-1Q-25.csv",
                 "EUR-2Q-25.csv", 
@@ -418,6 +418,14 @@
                 quarterly: 75000, // 75.000 Euro pro Quartal benötigt
                 vision: 81000 // 81.000 Euro Vision
             }
+        };
+
+        // Kontostände direkt im Code - einfach und zuverlässig
+        const KONTOSTÄNDE = {
+            1: { aktuell: 45933.80, vorjahr: 54584.52 },
+            2: { aktuell: 42546.81, vorjahr: 61064.95 },
+            3: { aktuell: 0, vorjahr: 56072.10 },
+            4: { aktuell: 0, vorjahr: 47903.91 }
         };
 
         let quarterData = [];
@@ -445,7 +453,7 @@
         async function loadDashboardData() {
             try {
                 const data = await loadCSVData();
-                quarterData = data;
+                quarterData = addKontostaende(data);
                 updateYearSummary();
                 renderQuarterCards();
             } catch (error) {
@@ -453,6 +461,19 @@
                 document.getElementById('dashboard').innerHTML = 
                     '<div class="error">Fehler beim Laden der CSV-Dateien. Bitte überprüfen Sie die GitHub-Konfiguration.</div>';
             }
+        }
+
+        function addKontostaende(quarterData) {
+            return quarterData.map(quarter => {
+                if (quarter && KONTOSTÄNDE[quarter.quarter]) {
+                    return {
+                        ...quarter,
+                        kontostand: KONTOSTÄNDE[quarter.quarter].aktuell,
+                        kontostandVorjahr: KONTOSTÄNDE[quarter.quarter].vorjahr
+                    };
+                }
+                return quarter;
+            });
         }
 
         async function loadCSVData() {
@@ -488,7 +509,6 @@
             let gesamtAusgaben = 0;
             let gesamtAusgabenVorjahr = 0;
             let ueberschuss = 0;
-            let kontostand = 0;
             let period = '';
 
             // Periode aus der ersten Zeile extrahieren
@@ -529,11 +549,6 @@
                 
                 if (line.includes('Überschuss/Unterdeckung') && cols[3]) {
                     ueberschuss = parseGermanNumber(cols[3]);
-                    continue;
-                }
-                
-                if (line.includes('Kontostand') && cols[3]) {
-                    kontostand = parseGermanNumber(cols[3]);
                     continue;
                 }
                 
@@ -609,9 +624,7 @@
             });
 
             if (quarterData.length > 0) {
-                // Verwende den Kontostand aus der separaten CSV (wenn vorhanden)
-                const lastQuarter = quarterData[quarterData.length - 1];
-                currentBalance = lastQuarter.kontostand || 0;
+                currentBalance = quarterData[quarterData.length - 1].kontostand || 0;
             }
 
             document.getElementById('yearResult').textContent = formatCurrency(totalResult);
@@ -744,8 +757,8 @@
                                     <tbody>
                                         <tr class="total-row">
                                             <td>Kontostand am Quartalsende</td>
-                                            <td style="color: ${quarter.kontostand >= 0 ? '#27ae60' : '#e74c3c'}; font-weight: bold;">${formatCurrency(quarter.kontostand)}</td>
-                                            <td style="color: ${quarter.kontostandVorjahr >= 0 ? '#27ae60' : '#e74c3c'};">${formatCurrency(quarter.kontostandVorjahr)}</td>
+                                            <td style="color: ${quarter.kontostand >= 0 ? '#27ae60' : '#e74c3c'}; font-weight: bold;">${formatCurrency(quarter.kontostand || 0)}</td>
+                                            <td style="color: ${quarter.kontostandVorjahr >= 0 ? '#27ae60' : '#e74c3c'};">${formatCurrency(quarter.kontostandVorjahr || 0)}</td>
                                         </tr>
                                     </tbody>
                                 </table>
