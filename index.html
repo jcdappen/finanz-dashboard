@@ -609,7 +609,9 @@
             });
 
             if (quarterData.length > 0) {
-                currentBalance = quarterData[quarterData.length - 1].kontostand;
+                // Verwende den Kontostand aus der separaten CSV (wenn vorhanden)
+                const lastQuarter = quarterData[quarterData.length - 1];
+                currentBalance = lastQuarter.kontostand || 0;
             }
 
             document.getElementById('yearResult').textContent = formatCurrency(totalResult);
