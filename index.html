@@ -133,9 +133,9 @@
         .positive { color: #27ae60; }
         .negative { color: #e74c3c; }
 
-        .quarters-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        .quarters-container {
+            display: flex;
+            flex-direction: column;
             gap: 30px;
             margin-bottom: 40px;
         }
@@ -147,20 +147,17 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             cursor: pointer;
             transition: transform 0.3s, box-shadow 0.3s;
+            width: 100%;
         }
 
         .quarter-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-        }
-
-        .quarter-card.flipped {
-            transform: rotateY(180deg);
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
         }
 
         .card-front, .card-back {
             padding: 30px;
-            min-height: 200px;
+            min-height: 150px;
         }
 
         .card-back {
@@ -176,73 +173,124 @@
         }
 
         .quarter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 20px;
         }
 
         .quarter-title {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             font-weight: bold;
-            margin-bottom: 5px;
         }
 
         .quarter-period {
             color: #666;
-            font-size: 0.9rem;
+            font-size: 1rem;
+        }
+
+        .quarter-overview {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            align-items: center;
         }
 
         .quarter-result {
-            font-size: 2.5rem;
+            font-size: 3rem;
             font-weight: bold;
-            margin: 20px 0;
+            text-align: center;
         }
 
         .goals {
-            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
 
         .goal {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
-            padding: 10px;
+            padding: 15px 20px;
             background: #f8f9fa;
-            border-radius: 8px;
+            border-radius: 12px;
+            border-left: 4px solid transparent;
+        }
+
+        .goal.achieved {
+            border-left-color: #27ae60;
+            background: #e8f5e8;
+        }
+
+        .goal.not-achieved {
+            border-left-color: #e74c3c;
+            background: #fdf2f2;
         }
 
         .goal-label {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .goal-amount {
             font-size: 0.9rem;
             color: #666;
+            margin-top: 2px;
         }
 
         .goal-status {
             font-weight: bold;
+            font-size: 1.1rem;
         }
 
         .achieved { color: #27ae60; }
         .not-achieved { color: #e74c3c; }
 
+        .details-section {
+            margin-bottom: 40px;
+        }
+
+        .details-section h4 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: #333;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+
         .details-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        .details-table th,
-        .details-table td {
-            text-align: left;
-            padding: 8px;
-            border-bottom: 1px solid #eee;
+            margin-bottom: 20px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
         }
 
         .details-table th {
             background: #f8f9fa;
+            padding: 15px;
+            text-align: left;
             font-weight: bold;
-            font-size: 0.9rem;
+            font-size: 1rem;
+            border-bottom: 1px solid #e9ecef;
         }
 
         .details-table td {
-            font-size: 0.8rem;
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.95rem;
+        }
+
+        .details-table tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .details-table .total-row {
+            background-color: #e9ecef;
+            font-weight: bold;
+            border-top: 2px solid #dee2e6;
         }
 
         .error {
@@ -265,10 +313,12 @@
             background: #667eea;
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
+            padding: 12px 24px;
+            border-radius: 8px;
             cursor: pointer;
             margin-bottom: 20px;
+            font-size: 1rem;
+            transition: background 0.3s;
         }
 
         .back-btn:hover {
@@ -276,18 +326,29 @@
         }
 
         @media (max-width: 768px) {
-            .summary-grid {
+            .quarter-overview {
                 grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .quarter-result {
+                font-size: 2.5rem;
             }
             
             .details-table th,
             .details-table td {
-                padding: 8px 4px;
-                font-size: 12px;
+                padding: 10px 8px;
+                font-size: 0.85rem;
             }
             
-            .details-table th {
-                font-size: 11px;
+            .quarter-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            
+            .quarter-title {
+                font-size: 1.5rem;
             }
         }
     </style>
@@ -329,7 +390,7 @@
             </div>
         </div>
 
-        <div class="quarters-grid" id="quartersGrid">
+        <div class="quarters-container" id="quartersContainer">
             <!-- Quartals-Karten werden hier dynamisch eingefügt -->
         </div>
     </div>
@@ -347,8 +408,8 @@
                 "EUR-4Q-25.csv"
             ],
             goals: {
-                quarterly: 25000, // Kostendeckung pro Quartal
-                monthlyVision: 27000 // Vision für Kinder- und Jugendbereich pro Monat
+                quarterly: 75000, // 75.000 Euro pro Quartal benötigt
+                vision: 81000 // 81.000 Euro Vision
             }
         };
 
@@ -547,8 +608,8 @@
         }
 
         function renderQuarterCards() {
-            const grid = document.getElementById('quartersGrid');
-            grid.innerHTML = '';
+            const container = document.getElementById('quartersContainer');
+            container.innerHTML = '';
 
             const quarterNames = ['1. Quartal', '2. Quartal', '3. Quartal', '4. Quartal'];
 
@@ -560,8 +621,7 @@
 
                 if (quarter) {
                     const quarterlyGoalAchieved = quarter.ueberschuss >= CONFIG.goals.quarterly;
-                    const monthlyVisionGoal = CONFIG.goals.monthlyVision * 3; // 3 Monate pro Quartal
-                    const visionGoalAchieved = quarter.ueberschuss >= monthlyVisionGoal;
+                    const visionGoalAchieved = quarter.ueberschuss >= CONFIG.goals.vision;
 
                     card.innerHTML = `
                         <div class="card-front">
@@ -569,90 +629,102 @@
                                 <div class="quarter-title">${quarterNames[i]}</div>
                                 <div class="quarter-period">${quarter.period}</div>
                             </div>
-                            <div class="quarter-result ${quarter.ueberschuss >= 0 ? 'positive' : 'negative'}">
-                                ${formatCurrency(quarter.ueberschuss)}
-                            </div>
-                            <div class="goals">
-                                <div class="goal">
-                                    <span class="goal-label">Kostendeckung</span>
-                                    <span class="goal-status ${quarterlyGoalAchieved ? 'achieved' : 'not-achieved'}">
-                                        ${quarterlyGoalAchieved ? '✓ Erreicht' : '✗ Nicht erreicht'}
-                                    </span>
+                            <div class="quarter-overview">
+                                <div class="quarter-result ${quarter.ueberschuss >= 0 ? 'positive' : 'negative'}">
+                                    ${formatCurrency(quarter.ueberschuss)}
                                 </div>
-                                <div class="goal">
-                                    <span class="goal-label">Vision (81.000€)</span>
-                                    <span class="goal-status ${visionGoalAchieved ? 'achieved' : 'not-achieved'}">
-                                        ${visionGoalAchieved ? '✓ Erreicht' : '✗ Nicht erreicht'}
-                                    </span>
+                                <div class="goals">
+                                    <div class="goal ${quarterlyGoalAchieved ? 'achieved' : 'not-achieved'}">
+                                        <div>
+                                            <div class="goal-label">Quartalsbedarf erreicht</div>
+                                            <div class="goal-amount">${formatCurrency(CONFIG.goals.quarterly)} benötigt</div>
+                                        </div>
+                                        <span class="goal-status ${quarterlyGoalAchieved ? 'achieved' : 'not-achieved'}">
+                                            ${quarterlyGoalAchieved ? '✓ Erreicht' : '✗ Nicht erreicht'}
+                                        </span>
+                                    </div>
+                                    <div class="goal ${visionGoalAchieved ? 'achieved' : 'not-achieved'}">
+                                        <div>
+                                            <div class="goal-label">Vision erreicht</div>
+                                            <div class="goal-amount">${formatCurrency(CONFIG.goals.vision)} Vision</div>
+                                        </div>
+                                        <span class="goal-status ${visionGoalAchieved ? 'achieved' : 'not-achieved'}">
+                                            ${visionGoalAchieved ? '✓ Erreicht' : '✗ Nicht erreicht'}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         <div class="card-back">
-                            <button class="back-btn" onclick="event.stopPropagation(); toggleCard(${i})">← Zurück</button>
+                            <button class="back-btn" onclick="event.stopPropagation(); toggleCard(${i})">← Zurück zur Übersicht</button>
                             <div class="quarter-header">
-                                <div class="quarter-title">${quarterNames[i]} - Details</div>
+                                <div class="quarter-title">${quarterNames[i]} - Detailansicht</div>
                                 <div class="quarter-period">${quarter.period}</div>
                             </div>
                             
-                            <h4>Erträge</h4>
-                            <table class="details-table">
-                                <thead>
-                                    <tr>
-                                        <th>Konto</th>
-                                        <th>Aktuell</th>
-                                        <th>Vorjahr</th>
-                                        <th>Diff.</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${quarter.ertraege.map(item => `
+                            <div class="details-section">
+                                <h4>Erträge (Einnahmen)</h4>
+                                <table class="details-table">
+                                    <thead>
                                         <tr>
-                                            <td>${item.name}</td>
-                                            <td style="color: #27ae60">${formatCurrency(item.aktuell)}</td>
-                                            <td>${formatCurrency(item.vorjahr)}</td>
-                                            <td class="${item.aktuell - item.vorjahr >= 0 ? 'positive' : 'negative'}">
-                                                ${formatCurrency(item.aktuell - item.vorjahr)}
-                                            </td>
+                                            <th>Konto</th>
+                                            <th>Aktuelles Jahr</th>
+                                            <th>Vorjahr</th>
+                                            <th>Differenz</th>
                                         </tr>
-                                    `).join('')}
-                                    <tr style="border-top: 2px solid #333; font-weight: bold;">
-                                        <td>Gesamt</td>
-                                        <td style="color: #27ae60">${formatCurrency(quarter.gesamtEinnahmen)}</td>
-                                        <td>-</td>
-                                        <td>-</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        ${quarter.ertraege.map(item => `
+                                            <tr>
+                                                <td>${item.name}</td>
+                                                <td style="color: #27ae60; font-weight: 500;">${formatCurrency(item.aktuell)}</td>
+                                                <td>${formatCurrency(item.vorjahr)}</td>
+                                                <td class="${item.aktuell - item.vorjahr >= 0 ? 'positive' : 'negative'}">
+                                                    ${formatCurrency(item.aktuell - item.vorjahr)}
+                                                </td>
+                                            </tr>
+                                        `).join('')}
+                                        <tr class="total-row">
+                                            <td>Gesamt Erträge</td>
+                                            <td style="color: #27ae60;">${formatCurrency(quarter.gesamtEinnahmen)}</td>
+                                            <td>-</td>
+                                            <td>-</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
 
-                            <h4 style="margin-top: 20px;">Aufwendungen</h4>
-                            <table class="details-table">
-                                <thead>
-                                    <tr>
-                                        <th>Konto</th>
-                                        <th>Aktuell</th>
-                                        <th>Vorjahr</th>
-                                        <th>Diff.</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${quarter.aufwendungen.map(item => `
+                            <div class="details-section">
+                                <h4>Aufwendungen (Ausgaben)</h4>
+                                <table class="details-table">
+                                    <thead>
                                         <tr>
-                                            <td>${item.name}</td>
-                                            <td style="color: #e74c3c">${formatCurrency(item.aktuell)}</td>
-                                            <td>${formatCurrency(item.vorjahr)}</td>
-                                            <td class="${item.aktuell - item.vorjahr <= 0 ? 'positive' : 'negative'}">
-                                                ${formatCurrency(item.aktuell - item.vorjahr)}
-                                            </td>
+                                            <th>Konto</th>
+                                            <th>Aktuelles Jahr</th>
+                                            <th>Vorjahr</th>
+                                            <th>Differenz</th>
                                         </tr>
-                                    `).join('')}
-                                    <tr style="border-top: 2px solid #333; font-weight: bold;">
-                                        <td>Gesamt</td>
-                                        <td style="color: #e74c3c">${formatCurrency(quarter.gesamtAusgaben)}</td>
-                                        <td>-</td>
-                                        <td>-</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        ${quarter.aufwendungen.map(item => `
+                                            <tr>
+                                                <td>${item.name}</td>
+                                                <td style="color: #e74c3c; font-weight: 500;">${formatCurrency(item.aktuell)}</td>
+                                                <td>${formatCurrency(item.vorjahr)}</td>
+                                                <td class="${item.aktuell - item.vorjahr <= 0 ? 'positive' : 'negative'}">
+                                                    ${formatCurrency(item.aktuell - item.vorjahr)}
+                                                </td>
+                                            </tr>
+                                        `).join('')}
+                                        <tr class="total-row">
+                                            <td>Gesamt Aufwendungen</td>
+                                            <td style="color: #e74c3c;">${formatCurrency(quarter.gesamtAusgaben)}</td>
+                                            <td>-</td>
+                                            <td>-</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     `;
                 } else {
@@ -662,8 +734,26 @@
                                 <div class="quarter-title">${quarterNames[i]}</div>
                                 <div class="quarter-period">Noch nicht verfügbar</div>
                             </div>
-                            <div class="quarter-result" style="color: #999;">
-                                Daten ausstehend
+                            <div class="quarter-overview">
+                                <div class="quarter-result" style="color: #999;">
+                                    Daten ausstehend
+                                </div>
+                                <div class="goals">
+                                    <div class="goal">
+                                        <div>
+                                            <div class="goal-label">Quartalsbedarf</div>
+                                            <div class="goal-amount">${formatCurrency(CONFIG.goals.quarterly)} benötigt</div>
+                                        </div>
+                                        <span class="goal-status" style="color: #999;">Ausstehend</span>
+                                    </div>
+                                    <div class="goal">
+                                        <div>
+                                            <div class="goal-label">Vision</div>
+                                            <div class="goal-amount">${formatCurrency(CONFIG.goals.vision)} Vision</div>
+                                        </div>
+                                        <span class="goal-status" style="color: #999;">Ausstehend</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     `;
@@ -672,7 +762,7 @@
                     card.onclick = null;
                 }
 
-                grid.appendChild(card);
+                container.appendChild(card);
             }
         }
 
