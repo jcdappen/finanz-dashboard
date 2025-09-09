@@ -744,7 +744,7 @@
                                         <tr class="total-row">
                                             <td>Kontostand am Quartalsende</td>
                                             <td style="color: ${quarter.kontostand >= 0 ? '#27ae60' : '#e74c3c'}; font-weight: bold;">${formatCurrency(quarter.kontostand)}</td>
-                                            <td>-</td>
+                                            <td style="color: ${quarter.kontostandVorjahr >= 0 ? '#27ae60' : '#e74c3c'};">${formatCurrency(quarter.kontostandVorjahr)}</td>
                                         </tr>
                                     </tbody>
                                 </table>
