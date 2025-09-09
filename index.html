@@ -283,6 +283,13 @@
             font-size: 0.95rem;
         }
 
+        .details-table th:nth-child(2),
+        .details-table th:nth-child(3),
+        .details-table td:nth-child(2),
+        .details-table td:nth-child(3) {
+            text-align: right !important;
+        }
+
         .details-table tr:hover {
             background-color: #f8f9fa;
         }
@@ -477,7 +484,9 @@
             let isErtraege = false;
             let isAufwendungen = false;
             let gesamtEinnahmen = 0;
+            let gesamtEinnahmenVorjahr = 0;
             let gesamtAusgaben = 0;
+            let gesamtAusgabenVorjahr = 0;
             let ueberschuss = 0;
             let kontostand = 0;
             let period = '';
@@ -507,10 +516,13 @@
                 
                 if (line.includes('Gesamtsumme') && cols[3]) {
                     const betrag = parseGermanNumber(cols[3]);
+                    const betragVorjahr = cols[4] ? parseGermanNumber(cols[4]) : 0;
                     if (isErtraege) {
                         gesamtEinnahmen = betrag;
+                        gesamtEinnahmenVorjahr = betragVorjahr;
                     } else if (isAufwendungen) {
                         gesamtAusgaben = betrag;
+                        gesamtAusgabenVorjahr = betragVorjahr;
                     }
                     continue;
                 }
@@ -553,7 +565,9 @@
                 ertraege: ertraege,
                 aufwendungen: aufwendungen,
                 gesamtEinnahmen: gesamtEinnahmen,
+                gesamtEinnahmenVorjahr: gesamtEinnahmenVorjahr,
                 gesamtAusgaben: gesamtAusgaben,
+                gesamtAusgabenVorjahr: gesamtAusgabenVorjahr,
                 ueberschuss: ueberschuss,
                 kontostand: kontostand
             };
@@ -670,7 +684,6 @@
                                             <th>Konto</th>
                                             <th>Aktuelles Jahr</th>
                                             <th>Vorjahr</th>
-                                            <th>Differenz</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -679,16 +692,12 @@
                                                 <td>${item.name}</td>
                                                 <td style="color: #27ae60; font-weight: 500;">${formatCurrency(item.aktuell)}</td>
                                                 <td>${formatCurrency(item.vorjahr)}</td>
-                                                <td class="${item.aktuell - item.vorjahr >= 0 ? 'positive' : 'negative'}">
-                                                    ${formatCurrency(item.aktuell - item.vorjahr)}
-                                                </td>
                                             </tr>
                                         `).join('')}
                                         <tr class="total-row">
                                             <td>Gesamt Erträge</td>
                                             <td style="color: #27ae60;">${formatCurrency(quarter.gesamtEinnahmen)}</td>
-                                            <td>-</td>
-                                            <td>-</td>
+                                            <td style="color: #27ae60;">${formatCurrency(quarter.gesamtEinnahmenVorjahr)}</td>
                                         </tr>
                                     </tbody>
                                 </table>
